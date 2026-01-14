@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CallMind SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        *{font-family:Arial,sans-serif}
+        .gradient-bg{background:linear-gradient(135deg,#667eea,#764ba2)}
+        .nav-active{background:linear-gradient(to right,#4f46e5,#6366f1);color:#fff}
+        .nav-inactive{color:#94a3b8}
+        .nav-inactive:hover{background:rgba(51,65,85,.5);color:#fff}
+        .page{display:none}
+        .page.active{display:block}
+    </style>
+</head>
+<body class="bg-slate-50">
+
+<script>
+const API_URL = window.location.origin;
+let token = localStorage.getItem('token');
+let user = JSON.parse(localStorage.getItem('user') || '{}');
+
+if (token && user.companyId) {
+    showDashboard();
+} else {
+    showLanding();
+}
+</script>
+
+<!-- LANDING -->
+<div id="landing" class="page">
+    <header class="bg-white border-b px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center text-white font-bold">CM</div>
+                <span class="text-xl font-bold">CallMind</span>
+            </div>
+            <button onclick="showAuth('login')" class="px-6 py-2 bg-indigo-600 text-white rounded-xl font-medium">Войти</button>
+        </div>
+    </header>
+    <section class="gradient-bg text-white py-20 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <h1 class="text-5xl font-bold mb-6">РОП на стероидах, который слушает 100% звонков</h1>
+            <p class="text-xl mb-8">AI-анализ звонков в реальном времени</p>
+            <button onclick="showAuth('register')" class="px-8 py-4 bg-white text-indigo-600 rounded-xl font-bold text-lg">🚀 Попробовать бесплатно</button>
+            <p class="mt-4 text-purple-200">14 дней триала • Не требуется карта</p>
+        </div>
+    </section>
+</div>
+
+<!-- AUTH MODAL -->
+<div id="auth-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-8">
+        <div id="register-form">
+            <h2 class="text-2xl font-bold mb-6">Регистрация</h2>
+            <input id="reg-company" placeholder="Название компании" class="w-full px-4 py-3 border rounded-xl mb-3">
+            <input id="reg-email" type="email" placeholder="Email" class="w-full px-4 py-3 border rounded-xl mb-3">
+            <input id="reg-password" type="password" placeholder="Пароль (мин. 6)" class="w-full px-4 py-3 border rounded-xl mb-3">
+            <input id="reg-name" placeholder="Ваше имя" class="w-full px-4 py-3 border rounded-xl mb-4">
+            <button onclick="register()" class="w-full py-3 gradient-bg text-white rounded-xl font-medium">Создать аккаунт</button>
+            <p class="text-center mt-4 text-sm">Есть аккаунт? <button onclick="showAuth('login')" class="text-indigo-600">Войти</button></p>
+        </div>
+        <div id="login-form" class="hidden">
+            <h2 class="text-2xl font-bold mb-6">Вход</h2>
+            <input id="login-email" type="email" placeholder="Email" class="w-full px-4 py-3 border rounded-xl mb-3">
+            <input id="login-password" type="password" placeholder="Пароль" class="w-full px-4 py-3 border rounded-xl mb-4">
+            <button onclick="login()" class="w-full py-3 gradient-bg text-white rounded-xl font-medium">Войти</button>
+            <p class="text-center mt-4 text-sm">Нет аккаунта? <button onclick="showAuth('register')" class="text-indigo-600">Регистрация</button></p>
+        </div>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="page min-h-screen flex">
+    <aside class="w-72 gradient-bg text-white flex flex-col">
+        <div class="p-6 border-b border-white/20">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center font-bold">CM</div>
+                <div><h1 class="font-bold">CallMind</h1><p class="text-xs opacity-80" id="company-name">—</p></div>
+            </div>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="showScreen('main')" id="nav-main" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl nav-active">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span>Дашборд</span>
+            </button>
+            <button onclick="showScreen('calls')" id="nav-calls" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl nav-inactive">
+                <i data-lucide="phone-call" class="w-5 h-5"></i><span>Звонки</span>
+            </button>
+            <button onclick="showScreen('team')" id="nav-team" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl nav-inactive">
+                <i data-lucide="users" class="w-5 h-5"></i><span>Команда</span>
+            </button>
+            <button onclick="showScreen('settings')" id="nav-settings" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl nav-inactive">
+                <i data-lucide="settings" class="w-5 h-5"></i><span>Настройки</span>
+            </button>
+        </nav>
+        <div class="p-4 border-t border-white/20">
+            <div class="flex items-center gap-3 p-3 bg-white/10 rounded-lg mb-2">
+                <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center font-bold" id="user-initials">?</div>
+                <div class="flex-1 min-w-0"><p class="text-sm font-medium truncate" id="user-name">—</p><p class="text-xs opacity-70 truncate" id="user-email">—</p></div>
+            </div>
+            <button onclick="logout()" class="w-full py-2 bg-red-500/20 text-red-300 rounded-lg text-sm">Выйти</button>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-auto">
+        <div class="bg-white border-b px-6 py-4"><h2 class="text-2xl font-bold" id="page-title">Дашборд</h2></div>
+        
+        <!-- MAIN SCREEN -->
+        <div id="screen-main" class="p-6 space-y-6">
+            <div class="grid grid-cols-4 gap-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border">
+                    <div class="w-11 h-11 rounded-xl bg-indigo-500 flex items-center justify-center text-white mb-3"><i data-lucide="phone-call" class="w-5 h-5"></i></div>
+                    <p class="text-slate-500 text-xs">Всего звонков</p>
+                    <p class="text-3xl font-bold" id="stat-total">0</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border">
+                    <div class="w-11 h-11 rounded-xl bg-violet-500 flex items-center justify-center text-white mb-3"><i data-lucide="brain" class="w-5 h-5"></i></div>
+                    <p class="text-slate-500 text-xs">Проанализировано</p>
+                    <p class="text-3xl font-bold text-violet-600" id="stat-analyzed">0</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-500 flex items-center justify-center text-white mb-3"><i data-lucide="star" class="w-5 h-5"></i></div>
+                    <p class="text-slate-500 text-xs">Средний балл</p>
+                    <p class="text-3xl font-bold text-emerald-600" id="stat-avg">—</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border">
+                    <div class="w-11 h-11 rounded-xl bg-amber-500 flex items-center justify-center text-white mb-3"><i data-lucide="trophy" class="w-5 h-5"></i></div>
+                    <p class="text-slate-500 text-xs">Успешные (80+)</p>
+                    <p class="text-3xl font-bold text-amber-600" id="stat-success">0</p>
+                </div>
+            </div>
+            <div id="empty-state" class="bg-white rounded-2xl p-12 text-center border-2 border-dashed">
+                <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="phone-off" class="w-10 h-10 text-indigo-600"></i></div>
+                <h3 class="text-xl font-bold mb-2">Нет данных</h3>
+                <p class="text-slate-500 mb-6">Подключите Битрикс24 и синхронизируйте звонки</p>
+                <button onclick="showScreen('settings')" class="px-6 py-3 bg-indigo-600 text-white rounded-xl">⚙️ Настройки</button>
+            </div>
+        </div>
+
+        <!-- CALLS SCREEN -->
+        <div id="screen-calls" class="p-6 hidden">
+            <div class="bg-white rounded-2xl p-8"><p class="text-center text-slate-500">Звонки появятся после синхронизации</p></div>
+        </div>
+
+        <!-- TEAM SCREEN -->
+        <div id="screen-team" class="p-6 hidden">
+            <div class="bg-white rounded-2xl p-8"><p class="text-center text-slate-500">Рейтинг команды появится здесь</p></div>
+        </div>
+
+        <!-- SETTINGS SCREEN -->
+        <div id="screen-settings" class="p-6 space-y-6 hidden">
+            <div class="bg-white rounded-2xl p-8 border">
+                <h3 class="text-xl font-bold mb-6">Подключение Битрикс24</h3>
+                <div id="bitrix-not-connected">
+                    <div class="space-y-4">
+                        <input id="bitrix-domain" placeholder="mycompany.bitrix24.ru" class="w-full px-4 py-3 border rounded-xl">
+                        <input id="bitrix-client-id" placeholder="Client ID" class="w-full px-4 py-3 border rounded-xl">
+                        <input id="bitrix-client-secret" placeholder="Client Secret" class="w-full px-4 py-3 border rounded-xl">
+                        <button onclick="connectBitrix()" class="w-full py-3 gradient-bg text-white rounded-xl font-medium">🔗 Подключить</button>
+                    </div>
+                </div>
+                <div id="bitrix-connected" class="hidden">
+                    <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl mb-6"><p class="font-medium text-emerald-800">✅ Битрикс подключён</p><p class="text-sm text-emerald-600" id="connected-domain">—</p></div>
+                    <div class="space-y-3">
+                        <button onclick="syncUsers()" class="w-full py-3 bg-indigo-600 text-white rounded-xl">👥 Синхронизировать менеджеров</button>
+                        <button onclick="syncCalls()" class="w-full py-3 bg-violet-600 text-white rounded-xl">📞 Синхронизировать звонки</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+lucide.createIcons();
+
+function showLanding() {
+    document.getElementById('landing').classList.add('active');
+    document.getElementById('dashboard').classList.remove('active');
+}
+
+function showDashboard() {
+    document.getElementById('landing').classList.remove('active');
+    document.getElementById('dashboard').classList.add('active');
+    if (user.companyName) {
+        document.getElementById('company-name').textContent = user.companyName;
+        document.getElementById('user-name').textContent = user.name || user.email;
+        document.getElementById('user-email').textContent = user.email;
+        document.getElementById('user-initials').textContent = (user.name || user.email).split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+    }
+    checkBitrix();
+    loadData();
+    lucide.createIcons();
+}
+
+function showAuth(type) {
+    document.getElementById('auth-modal').classList.remove('hidden');
+    if (type === 'login') {
+        document.getElementById('register-form').classList.add('hidden');
+        document.getElementById('login-form').classList.remove('hidden');
+    } else {
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('register-form').classList.remove('hidden');
+    }
+}
+
+async function register() {
+    const data = {
+        companyName: document.getElementById('reg-company').value,
+        email: document.getElementById('reg-email').value,
+        password: document.getElementById('reg-password').value,
+        name: document.getElementById('reg-name').value
+    };
+    if (!data.companyName || !data.email || !data.password) return alert('Заполните все поля');
+    try {
+        const res = await fetch(`${API_URL}/api/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const result = await res.json();
+        if (result.success) {
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('user', JSON.stringify(result.user));
+            token = result.token;
+            user = result.user;
+            document.getElementById('auth-modal').classList.add('hidden');
+            showDashboard();
+        } else {
+            alert('Ошибка: ' + result.error);
+        }
+    } catch (e) {
+        alert('Ошибка: ' + e.message);
+    }
+}
+
+async function login() {
+    const data = { email: document.getElementById('login-email').value, password: document.getElementById('login-password').value };
+    if (!data.email || !data.password) return alert('Введите email и пароль');
+    try {
+        const res = await fetch(`${API_URL}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const result = await res.json();
+        if (result.success) {
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('user', JSON.stringify(result.user));
+            token = result.token;
+            user = result.user;
+            document.getElementById('auth-modal').classList.add('hidden');
+            showDashboard();
+        } else {
+            alert('Ошибка: ' + result.error);
+        }
+    } catch (e) {
+        alert('Ошибка: ' + e.message);
+    }
+}
+
+function logout() {
+    localStorage.clear();
+    location.reload();
+}
+
+function showScreen(id) {
+    document.querySelectorAll('[id^="screen-"]').forEach(s => s.classList.add('hidden'));
+    document.getElementById('screen-' + id).classList.remove('hidden');
+    document.querySelectorAll('[id^="nav-"]').forEach(b => { b.classList.remove('nav-active'); b.classList.add('nav-inactive'); });
+    document.getElementById('nav-' + id)?.classList.remove('nav-inactive');
+    document.getElementById('nav-' + id)?.classList.add('nav-active');
+    lucide.createIcons();
+}
+
+async function connectBitrix() {
+    const data = { bitrixDomain: document.getElementById('bitrix-domain').value, clientId: document.getElementById('bitrix-client-id').value, clientSecret: document.getElementById('bitrix-client-secret').value };
+    if (!data.bitrixDomain || !data.clientId || !data.clientSecret) return alert('Заполните все поля');
+    try {
+        const res = await fetch(`${API_URL}/api/bitrix/connect`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(data) });
+        const result = await res.json();
+        if (result.success && confirm('Открыть страницу авторизации Битрикс24?')) {
+            window.open(result.authUrl, '_blank');
+            alert('После авторизации обновите страницу');
+        }
+    } catch (e) {
+        alert('Ошибка: ' + e.message);
+    }
+}
+
+async function syncUsers() {
+    try {
+        const res = await fetch(`${API_URL}/api/bitrix/sync-users`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+        const result = await res.json();
+        alert(result.message || 'Готово');
+    } catch (e) {
+        alert('Ошибка: ' + e.message);
+    }
+}
+
+async function syncCalls() {
+    try {
+        const res = await fetch(`${API_URL}/api/bitrix/sync-calls`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+        const result = await res.json();
+        alert(result.message || 'Готово');
+        loadData();
+    } catch (e) {
+        alert('Ошибка: ' + e.message);
+    }
+}
+
+async function checkBitrix() {
+    try {
+        const res = await fetch(`${API_URL}/api/bitrix/status`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const status = await res.json();
+        if (status.connected) {
+            document.getElementById('bitrix-not-connected').classList.add('hidden');
+            document.getElementById('bitrix-connected').classList.remove('hidden');
+            document.getElementById('connected-domain').textContent = status.domain;
+        }
+    } catch (e) {}
+}
+
+async function loadData() {
+    try {
+        const res = await fetch(`${API_URL}/api/calls`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const calls = await res.json();
+        document.getElementById('stat-total').textContent = calls.length;
+        const analyzed = calls.filter(c => c.scores);
+        document.getElementById('stat-analyzed').textContent = analyzed.length;
+        if (analyzed.length > 0) {
+            const avg = Math.round(analyzed.reduce((s, c) => s + c.scores.total_score, 0) / analyzed.length);
+            document.getElementById('stat-avg').textContent = avg;
+            const success = analyzed.filter(c => c.scores.total_score >= 80).length;
+            document.getElementById('stat-success').textContent = success;
+            document.getElementById('empty-state').classList.add('hidden');
+        }
+    } catch (e) {}
+}
+</script>
+
+</body>
+</html>
