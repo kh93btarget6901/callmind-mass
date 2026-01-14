@@ -7,77 +7,64 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        *{font-family:Arial,sans-serif}
+        *{font-family:Arial,sans-serif;margin:0;padding:0;box-sizing:border-box}
+        body{overflow-x:hidden}
         .gradient-bg{background:linear-gradient(135deg,#667eea,#764ba2)}
         .nav-active{background:linear-gradient(to right,#4f46e5,#6366f1);color:#fff}
         .nav-inactive{color:#94a3b8}
         .nav-inactive:hover{background:rgba(51,65,85,.5);color:#fff}
-       .page{display:none !important}
-.page.active{display:block !important}
     </style>
 </head>
 <body class="bg-slate-50">
 
-<script>
-const API_URL = window.location.origin;
-let token = localStorage.getItem('token');
-let user = JSON.parse(localStorage.getItem('user') || '{}');
-
-if (token && user.companyId) {
-    showDashboard();
-} else {
-    showLanding();
-}
-</script>
-
 <!-- LANDING -->
-<div id="landing" class="page">
+<div id="landing" style="display:none">
     <header class="bg-white border-b px-6 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center text-white font-bold">CM</div>
                 <span class="text-xl font-bold">CallMind</span>
             </div>
-            <button onclick="showAuth('login')" class="px-6 py-2 bg-indigo-600 text-white rounded-xl font-medium">Войти</button>
+            <button onclick="showAuth('login')" class="px-6 py-2 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700">Войти</button>
         </div>
     </header>
     <section class="gradient-bg text-white py-20 text-center">
         <div class="max-w-4xl mx-auto px-6">
             <h1 class="text-5xl font-bold mb-6">РОП на стероидах, который слушает 100% звонков</h1>
             <p class="text-xl mb-8">AI-анализ звонков в реальном времени</p>
-            <button onclick="showAuth('register')" class="px-8 py-4 bg-white text-indigo-600 rounded-xl font-bold text-lg">🚀 Попробовать бесплатно</button>
+            <button onclick="showAuth('register')" class="px-8 py-4 bg-white text-indigo-600 rounded-xl font-bold text-lg hover:shadow-xl transition">🚀 Попробовать бесплатно</button>
             <p class="mt-4 text-purple-200">14 дней триала • Не требуется карта</p>
         </div>
     </section>
 </div>
 
 <!-- AUTH MODAL -->
-<div id="auth-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+<div id="auth-modal" style="display:none" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-8">
         <div id="register-form">
             <h2 class="text-2xl font-bold mb-6">Регистрация</h2>
-            <input id="reg-company" placeholder="Название компании" class="w-full px-4 py-3 border rounded-xl mb-3">
-            <input id="reg-email" type="email" placeholder="Email" class="w-full px-4 py-3 border rounded-xl mb-3">
-            <input id="reg-password" type="password" placeholder="Пароль (мин. 6)" class="w-full px-4 py-3 border rounded-xl mb-3">
-            <input id="reg-name" placeholder="Ваше имя" class="w-full px-4 py-3 border rounded-xl mb-4">
-            <button onclick="register()" class="w-full py-3 gradient-bg text-white rounded-xl font-medium">Создать аккаунт</button>
-            <p class="text-center mt-4 text-sm">Есть аккаунт? <button onclick="showAuth('login')" class="text-indigo-600">Войти</button></p>
+            <input id="reg-company" placeholder="Название компании" class="w-full px-4 py-3 border rounded-xl mb-3 focus:outline-none focus:border-indigo-500">
+            <input id="reg-email" type="email" placeholder="Email" class="w-full px-4 py-3 border rounded-xl mb-3 focus:outline-none focus:border-indigo-500">
+            <input id="reg-password" type="password" placeholder="Пароль (мин. 6)" class="w-full px-4 py-3 border rounded-xl mb-3 focus:outline-none focus:border-indigo-500">
+            <input id="reg-name" placeholder="Ваше имя" class="w-full px-4 py-3 border rounded-xl mb-4 focus:outline-none focus:border-indigo-500">
+            <button onclick="register()" class="w-full py-3 gradient-bg text-white rounded-xl font-medium hover:opacity-90">Создать аккаунт</button>
+            <p class="text-center mt-4 text-sm">Есть аккаунт? <button onclick="showAuth('login')" class="text-indigo-600 hover:underline">Войти</button></p>
         </div>
-        <div id="login-form" class="hidden">
+        <div id="login-form" style="display:none">
             <h2 class="text-2xl font-bold mb-6">Вход</h2>
-            <input id="login-email" type="email" placeholder="Email" class="w-full px-4 py-3 border rounded-xl mb-3">
-            <input id="login-password" type="password" placeholder="Пароль" class="w-full px-4 py-3 border rounded-xl mb-4">
-            <button onclick="login()" class="w-full py-3 gradient-bg text-white rounded-xl font-medium">Войти</button>
-            <p class="text-center mt-4 text-sm">Нет аккаунта? <button onclick="showAuth('register')" class="text-indigo-600">Регистрация</button></p>
+            <input id="login-email" type="email" placeholder="Email" class="w-full px-4 py-3 border rounded-xl mb-3 focus:outline-none focus:border-indigo-500">
+            <input id="login-password" type="password" placeholder="Пароль" class="w-full px-4 py-3 border rounded-xl mb-4 focus:outline-none focus:border-indigo-500">
+            <button onclick="login()" class="w-full py-3 gradient-bg text-white rounded-xl font-medium hover:opacity-90">Войти</button>
+            <p class="text-center mt-4 text-sm">Нет аккаунта? <button onclick="showAuth('register')" class="text-indigo-600 hover:underline">Регистрация</button></p>
         </div>
     </div>
 </div>
 
 <!-- DASHBOARD -->
-<div id="dashboard" class="page min-h-screen flex">
+<div id="dashboard" style="display:none" class="min-h-screen flex">
     <aside class="w-72 gradient-bg text-white flex flex-col">
         <div class="p-6 border-b border-white/20">
-            <div class="flex items-center gap-2 mb-2">
+            <div class="flex items-center gap-2">
                 <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center font-bold">CM</div>
                 <div><h1 class="font-bold">CallMind</h1><p class="text-xs opacity-80" id="company-name">—</p></div>
             </div>
@@ -108,9 +95,8 @@ if (token && user.companyId) {
     <main class="flex-1 overflow-auto">
         <div class="bg-white border-b px-6 py-4"><h2 class="text-2xl font-bold" id="page-title">Дашборд</h2></div>
         
-        <!-- MAIN SCREEN -->
         <div id="screen-main" class="p-6 space-y-6">
-            <div class="grid grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="bg-white rounded-2xl p-6 shadow-sm border">
                     <div class="w-11 h-11 rounded-xl bg-indigo-500 flex items-center justify-center text-white mb-3"><i data-lucide="phone-call" class="w-5 h-5"></i></div>
                     <p class="text-slate-500 text-xs">Всего звонков</p>
@@ -136,37 +122,34 @@ if (token && user.companyId) {
                 <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="phone-off" class="w-10 h-10 text-indigo-600"></i></div>
                 <h3 class="text-xl font-bold mb-2">Нет данных</h3>
                 <p class="text-slate-500 mb-6">Подключите Битрикс24 и синхронизируйте звонки</p>
-                <button onclick="showScreen('settings')" class="px-6 py-3 bg-indigo-600 text-white rounded-xl">⚙️ Настройки</button>
+                <button onclick="showScreen('settings')" class="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">⚙️ Настройки</button>
             </div>
         </div>
 
-        <!-- CALLS SCREEN -->
-        <div id="screen-calls" class="p-6 hidden">
+        <div id="screen-calls" class="p-6" style="display:none">
             <div class="bg-white rounded-2xl p-8"><p class="text-center text-slate-500">Звонки появятся после синхронизации</p></div>
         </div>
 
-        <!-- TEAM SCREEN -->
-        <div id="screen-team" class="p-6 hidden">
+        <div id="screen-team" class="p-6" style="display:none">
             <div class="bg-white rounded-2xl p-8"><p class="text-center text-slate-500">Рейтинг команды появится здесь</p></div>
         </div>
 
-        <!-- SETTINGS SCREEN -->
-        <div id="screen-settings" class="p-6 space-y-6 hidden">
+        <div id="screen-settings" class="p-6 space-y-6" style="display:none">
             <div class="bg-white rounded-2xl p-8 border">
                 <h3 class="text-xl font-bold mb-6">Подключение Битрикс24</h3>
                 <div id="bitrix-not-connected">
                     <div class="space-y-4">
-                        <input id="bitrix-domain" placeholder="mycompany.bitrix24.ru" class="w-full px-4 py-3 border rounded-xl">
-                        <input id="bitrix-client-id" placeholder="Client ID" class="w-full px-4 py-3 border rounded-xl">
-                        <input id="bitrix-client-secret" placeholder="Client Secret" class="w-full px-4 py-3 border rounded-xl">
-                        <button onclick="connectBitrix()" class="w-full py-3 gradient-bg text-white rounded-xl font-medium">🔗 Подключить</button>
+                        <input id="bitrix-domain" placeholder="mycompany.bitrix24.ru" class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-indigo-500">
+                        <input id="bitrix-client-id" placeholder="Client ID" class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-indigo-500">
+                        <input id="bitrix-client-secret" placeholder="Client Secret" class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-indigo-500">
+                        <button onclick="connectBitrix()" class="w-full py-3 gradient-bg text-white rounded-xl font-medium hover:opacity-90">🔗 Подключить</button>
                     </div>
                 </div>
-                <div id="bitrix-connected" class="hidden">
+                <div id="bitrix-connected" style="display:none">
                     <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl mb-6"><p class="font-medium text-emerald-800">✅ Битрикс подключён</p><p class="text-sm text-emerald-600" id="connected-domain">—</p></div>
                     <div class="space-y-3">
-                        <button onclick="syncUsers()" class="w-full py-3 bg-indigo-600 text-white rounded-xl">👥 Синхронизировать менеджеров</button>
-                        <button onclick="syncCalls()" class="w-full py-3 bg-violet-600 text-white rounded-xl">📞 Синхронизировать звонки</button>
+                        <button onclick="syncUsers()" class="w-full py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">👥 Синхронизировать менеджеров</button>
+                        <button onclick="syncCalls()" class="w-full py-3 bg-violet-600 text-white rounded-xl hover:bg-violet-700">📞 Синхронизировать звонки</button>
                     </div>
                 </div>
             </div>
@@ -175,17 +158,30 @@ if (token && user.companyId) {
 </div>
 
 <script>
-lucide.createIcons();
+const API_URL = window.location.origin;
+let token = localStorage.getItem('token');
+let user = JSON.parse(localStorage.getItem('user') || '{}');
+
+function init() {
+    if (token && user.companyId) {
+        showDashboard();
+    } else {
+        showLanding();
+    }
+    lucide.createIcons();
+}
 
 function showLanding() {
-    document.getElementById('landing').classList.add('active');
-    document.getElementById('dashboard').classList.remove('active');
+    document.getElementById('landing').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('auth-modal').style.display = 'none';
     lucide.createIcons();
 }
 
 function showDashboard() {
-    document.getElementById('landing').classList.remove('active');
-    document.getElementById('dashboard').classList.add('active');
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    document.getElementById('auth-modal').style.display = 'none';
     if (user.companyName) {
         document.getElementById('company-name').textContent = user.companyName;
         document.getElementById('user-name').textContent = user.name || user.email;
@@ -198,13 +194,13 @@ function showDashboard() {
 }
 
 function showAuth(type) {
-    document.getElementById('auth-modal').classList.remove('hidden');
+    document.getElementById('auth-modal').style.display = 'flex';
     if (type === 'login') {
-        document.getElementById('register-form').classList.add('hidden');
-        document.getElementById('login-form').classList.remove('hidden');
+        document.getElementById('register-form').style.display = 'none';
+        document.getElementById('login-form').style.display = 'block';
     } else {
-        document.getElementById('login-form').classList.add('hidden');
-        document.getElementById('register-form').classList.remove('hidden');
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('register-form').style.display = 'block';
     }
 }
 
@@ -224,7 +220,6 @@ async function register() {
             localStorage.setItem('user', JSON.stringify(result.user));
             token = result.token;
             user = result.user;
-            document.getElementById('auth-modal').classList.add('hidden');
             showDashboard();
         } else {
             alert('Ошибка: ' + result.error);
@@ -245,7 +240,6 @@ async function login() {
             localStorage.setItem('user', JSON.stringify(result.user));
             token = result.token;
             user = result.user;
-            document.getElementById('auth-modal').classList.add('hidden');
             showDashboard();
         } else {
             alert('Ошибка: ' + result.error);
@@ -259,15 +253,12 @@ function logout() {
     localStorage.clear();
     token = null;
     user = {};
-    document.getElementById('dashboard').classList.remove('active');
-    document.getElementById('landing').classList.add('active');
-    document.getElementById('auth-modal').classList.add('hidden');
-    lucide.createIcons();
+    showLanding();
 }
 
 function showScreen(id) {
-    document.querySelectorAll('[id^="screen-"]').forEach(s => s.classList.add('hidden'));
-    document.getElementById('screen-' + id).classList.remove('hidden');
+    document.querySelectorAll('[id^="screen-"]').forEach(s => s.style.display = 'none');
+    document.getElementById('screen-' + id).style.display = 'block';
     document.querySelectorAll('[id^="nav-"]').forEach(b => { b.classList.remove('nav-active'); b.classList.add('nav-inactive'); });
     document.getElementById('nav-' + id)?.classList.remove('nav-inactive');
     document.getElementById('nav-' + id)?.classList.add('nav-active');
@@ -315,8 +306,8 @@ async function checkBitrix() {
         const res = await fetch(`${API_URL}/api/bitrix/status`, { headers: { 'Authorization': `Bearer ${token}` } });
         const status = await res.json();
         if (status.connected) {
-            document.getElementById('bitrix-not-connected').classList.add('hidden');
-            document.getElementById('bitrix-connected').classList.remove('hidden');
+            document.getElementById('bitrix-not-connected').style.display = 'none';
+            document.getElementById('bitrix-connected').style.display = 'block';
             document.getElementById('connected-domain').textContent = status.domain;
         }
     } catch (e) {}
@@ -334,10 +325,12 @@ async function loadData() {
             document.getElementById('stat-avg').textContent = avg;
             const success = analyzed.filter(c => c.scores.total_score >= 80).length;
             document.getElementById('stat-success').textContent = success;
-            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('empty-state').style.display = 'none';
         }
     } catch (e) {}
 }
+
+init();
 </script>
 
 </body>
