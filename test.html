@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CallMind Test</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            max-width: 700px; 
+            margin: 50px auto; 
+            padding: 30px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { color: #4f46e5; margin-top: 0; }
+        h2 { color: #6b7280; font-size: 18px; margin-top: 25px; }
+        input, button { 
+            display: block; 
+            width: 100%; 
+            margin: 10px 0; 
+            padding: 14px; 
+            font-size: 16px; 
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        button { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            border: none; 
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .result { 
+            margin-top: 20px; 
+            padding: 20px; 
+            background: #f9fafb; 
+            border-radius: 10px; 
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            border: 1px solid #e5e7eb;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { background: #d1fae5; border-color: #10b981; color: #065f46; }
+        .error { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 CallMind API Тестирование</h1>
+        <p style="color: #6b7280;">Проверка работы регистрации и авторизации</p>
+        
+        <h2>📝 1. Регистрация новой компании</h2>
+        <input id="reg-company" placeholder="Название компании" value="Моя компания">
+        <input id="reg-email" placeholder="Email" value="test@example.com">
+        <input id="reg-password" type="password" placeholder="Пароль (мин. 6 символов)" value="123456">
+        <input id="reg-name" placeholder="Ваше имя" value="Иван Иванов">
+        <button onclick="register()">🚀 Зарегистрировать компанию</button>
+        
+        <h2>🔐 2. Вход в систему</h2>
+        <input id="login-email" placeholder="Email" value="test@example.com">
+        <input id="login-password" type="password" placeholder="Пароль" value="123456">
+        <button onclick="login()">🔓 Войти</button>
+        
+        <h2>📊 Результат:</h2>
+        <div class="result" id="result">Нажмите на кнопку выше для теста...</div>
+    </div>
+
+    <script>
+        const API_URL = 'https://callmind-mass-production.up.railway.app';
+        
+        async function register() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = '⏳ Регистрация...';
+            resultDiv.className = 'result';
+            
+            const data = {
+                companyName: document.getElementById('reg-company').value,
+                email: document.getElementById('reg-email').value,
+                password: document.getElementById('reg-password').value,
+                name: document.getElementById('reg-name').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ РЕГИСТРАЦИЯ УСПЕШНА!\n\n' + JSON.stringify(result, null, 2);
+                    localStorage.setItem('token', result.token);
+                    alert('✅ Компания зарегистрирована! Токен сохранён.');
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '❌ ОШИБКА:\n\n' + JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ ОШИБКА СЕТИ:\n\n' + error.message;
+            }
+        }
+        
+        async function login() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = '⏳ Вход...';
+            resultDiv.className = 'result';
+            
+            const data = {
+                email: document.getElementById('login-email').value,
+                password: document.getElementById('login-password').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ ВХОД УСПЕШЕН!\n\n' + JSON.stringify(result, null, 2);
+                    localStorage.setItem('token', result.token);
+                    alert('✅ Вы вошли в систему! Токен сохранён.');
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '❌ ОШИБКА:\n\n' + JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ ОШИБКА СЕТИ:\n\n' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
+```
