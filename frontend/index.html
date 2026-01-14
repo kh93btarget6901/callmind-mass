@@ -18,6 +18,7 @@
 <body class="bg-slate-50">
 
 <!-- LANDING -->
+<!-- LANDING -->
 <div id="landing" style="display:none">
     <header class="bg-white border-b px-6 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
@@ -28,14 +29,90 @@
             <button onclick="showAuth('login')" class="px-6 py-2 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700">Войти</button>
         </div>
     </header>
+    
+    <!-- Hero -->
     <section class="gradient-bg text-white py-20 text-center">
         <div class="max-w-4xl mx-auto px-6">
             <h1 class="text-5xl font-bold mb-6">РОП на стероидах, который слушает 100% звонков</h1>
-            <p class="text-xl mb-8">AI-анализ звонков в реальном времени</p>
-            <button onclick="showAuth('register')" class="px-8 py-4 bg-white text-indigo-600 rounded-xl font-bold text-lg hover:shadow-xl transition">🚀 Попробовать бесплатно</button>
-            <p class="mt-4 text-purple-200">14 дней триала • Не требуется карта</p>
+            <p class="text-xl mb-8">AI-анализ звонков в реальном времени. Автоматическая оценка, рекомендации, рейтинг команды.</p>
+            <div class="flex gap-4 justify-center mb-4">
+                <button onclick="showAuth('register')" class="px-8 py-4 bg-white text-indigo-600 rounded-xl font-bold text-lg hover:shadow-xl transition">🚀 Попробовать бесплатно</button>
+                <button class="px-8 py-4 bg-purple-700 text-white rounded-xl font-bold text-lg hover:bg-purple-800">📖 Как это работает</button>
+            </div>
+            <p class="text-purple-200">14 дней триала • Не требуется карта</p>
         </div>
     </section>
+
+    <!-- Features -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-12">Что умеет CallMind</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="p-8 bg-slate-50 rounded-2xl">
+                    <div class="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center mb-4"><i data-lucide="zap" class="w-7 h-7 text-indigo-600"></i></div>
+                    <h3 class="text-xl font-bold mb-3">Автоматический анализ</h3>
+                    <p class="text-slate-600">Каждый звонок анализируется через 30 секунд после завершения. Никакой ручной работы.</p>
+                </div>
+                <div class="p-8 bg-slate-50 rounded-2xl">
+                    <div class="w-14 h-14 bg-violet-100 rounded-xl flex items-center justify-center mb-4"><i data-lucide="target" class="w-7 h-7 text-violet-600"></i></div>
+                    <h3 class="text-xl font-bold mb-3">Объективная оценка</h3>
+                    <p class="text-slate-600">ИИ оценивает по 5 критериям: приветствие, выявление потребностей, предложение, закрытие, возражения.</p>
+                </div>
+                <div class="p-8 bg-slate-50 rounded-2xl">
+                    <div class="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mb-4"><i data-lucide="trending-up" class="w-7 h-7 text-emerald-600"></i></div>
+                    <h3 class="text-xl font-bold mb-3">Рост конверсии</h3>
+                    <p class="text-slate-600">+15-30% к продажам через 2 месяца благодаря точечной работе над ошибками.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="py-20 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-12">Тарифы</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-2xl border-2 border-slate-200">
+                    <h3 class="text-2xl font-bold mb-2">Старт</h3>
+                    <p class="text-4xl font-bold text-indigo-600 mb-4">15 000₽<span class="text-lg text-slate-500">/мес</span></p>
+                    <ul class="space-y-3 mb-6 text-sm">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> До 5 менеджеров</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> 500 минут анализа</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> Битрикс24</li>
+                    </ul>
+                    <button onclick="showAuth('register')" class="w-full py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700">Начать</button>
+                </div>
+                <div class="bg-white p-8 rounded-2xl border-2 border-indigo-500 relative">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-sm font-medium">Популярный</div>
+                    <h3 class="text-2xl font-bold mb-2">Бизнес</h3>
+                    <p class="text-4xl font-bold text-indigo-600 mb-4">35 000₽<span class="text-lg text-slate-500">/мес</span></p>
+                    <ul class="space-y-3 mb-6 text-sm">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> До 15 менеджеров</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> 2000 минут анализа</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> Битрикс24 + AmoCRM</li>
+                    </ul>
+                    <button onclick="showAuth('register')" class="w-full py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700">Начать</button>
+                </div>
+                <div class="bg-white p-8 rounded-2xl border-2 border-slate-200">
+                    <h3 class="text-2xl font-bold mb-2">Про</h3>
+                    <p class="text-4xl font-bold text-slate-800 mb-4">По запросу</p>
+                    <ul class="space-y-3 mb-6 text-sm">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> Безлимит менеджеров</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> 5000+ минут</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> API доступ</li>
+                    </ul>
+                    <button class="w-full py-3 bg-slate-800 text-white rounded-xl font-medium hover:bg-slate-900">Связаться</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-slate-400">© 2026 CallMind. Все права защищены.</p>
+        </div>
+    </footer>
 </div>
 
 <!-- AUTH MODAL -->
