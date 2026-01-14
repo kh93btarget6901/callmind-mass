@@ -11,6 +11,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve frontend files
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../frontend')));
+
 // Supabase
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -252,6 +256,7 @@ app.get('/api/auth/me', authMiddleware, async (req, res) => {
     return res.status(401).json({ error: 'Невалидный токен' });
   }
 });
+
 // ==================== BITRIX24 INTEGRATION ====================
 
 // Начало авторизации Битрикс (генерация ссылки)
@@ -558,6 +563,7 @@ app.get('/api/calls', authMiddleware, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 // ==================== ЗАПУСК СЕРВЕРА ====================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
