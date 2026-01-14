@@ -101,7 +101,7 @@ if (token && user.companyId) {
                 <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center font-bold" id="user-initials">?</div>
                 <div class="flex-1 min-w-0"><p class="text-sm font-medium truncate" id="user-name">—</p><p class="text-xs opacity-70 truncate" id="user-email">—</p></div>
             </div>
-            <button onclick="logout()" class="w-full py-2 bg-red-500/20 text-red-300 rounded-lg text-sm">Выйти</button>
+            <button onclick="logout()" class="w-full py-2 bg-red-500/20 text-red-300 rounded-lg text-sm hover:bg-red-500/30 transition">Выйти</button>
         </div>
     </aside>
 
@@ -180,6 +180,7 @@ lucide.createIcons();
 function showLanding() {
     document.getElementById('landing').classList.add('active');
     document.getElementById('dashboard').classList.remove('active');
+    lucide.createIcons();
 }
 
 function showDashboard() {
@@ -256,7 +257,12 @@ async function login() {
 
 function logout() {
     localStorage.clear();
-    location.reload();
+    token = null;
+    user = {};
+    document.getElementById('dashboard').classList.remove('active');
+    document.getElementById('landing').classList.add('active');
+    document.getElementById('auth-modal').classList.add('hidden');
+    lucide.createIcons();
 }
 
 function showScreen(id) {
