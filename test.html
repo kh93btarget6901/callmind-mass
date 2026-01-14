@@ -6,11 +6,10 @@
     <style>
         body { 
             font-family: 'Segoe UI', Arial, sans-serif; 
-            max-width: 700px; 
-            margin: 50px auto; 
+            max-width: 900px; 
+            margin: 30px auto; 
             padding: 30px; 
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
         }
         .container {
             background: white;
@@ -19,7 +18,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         h1 { color: #4f46e5; margin-top: 0; }
-        h2 { color: #6b7280; font-size: 18px; margin-top: 25px; }
+        h2 { color: #6b7280; font-size: 18px; margin-top: 25px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
         input, button { 
             display: block; 
             width: 100%; 
@@ -46,6 +45,10 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         .result { 
             margin-top: 20px; 
             padding: 20px; 
@@ -55,42 +58,102 @@
             font-family: 'Courier New', monospace;
             font-size: 13px;
             border: 1px solid #e5e7eb;
-            max-height: 400px;
+            max-height: 300px;
             overflow-y: auto;
         }
         .success { background: #d1fae5; border-color: #10b981; color: #065f46; }
         .error { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 12px 24px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6b7280;
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧪 CallMind API Тестирование</h1>
-        <p style="color: #6b7280;">Проверка работы регистрации и авторизации</p>
+        <h1>🧪 CallMind SaaS Тестирование</h1>
         
-        <h2>📝 1. Регистрация новой компании</h2>
-        <input id="reg-company" placeholder="Название компании" value="Моя компания">
-        <input id="reg-email" placeholder="Email" value="test@example.com">
-        <input id="reg-password" type="password" placeholder="Пароль (мин. 6 символов)" value="123456">
-        <input id="reg-name" placeholder="Ваше имя" value="Иван Иванов">
-        <button onclick="register()">🚀 Зарегистрировать компанию</button>
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('auth')">🔐 Авторизация</button>
+            <button class="tab" onclick="showTab('bitrix')" id="tab-bitrix">📞 Битрикс24</button>
+            <button class="tab" onclick="showTab('data')" id="tab-data">📊 Данные</button>
+        </div>
         
-        <h2>🔐 2. Вход в систему</h2>
-        <input id="login-email" placeholder="Email" value="test@example.com">
-        <input id="login-password" type="password" placeholder="Пароль" value="123456">
-        <button onclick="login()">🔓 Войти</button>
+        <!-- AUTH SECTION -->
+        <div id="section-auth" class="section active">
+            <h2>📝 Регистрация</h2>
+            <input id="reg-company" placeholder="Название компании" value="Моя компания">
+            <input id="reg-email" placeholder="Email" value="test@example.com">
+            <input id="reg-password" type="password" placeholder="Пароль (мин. 6 символов)" value="123456">
+            <input id="reg-name" placeholder="Ваше имя" value="Иван Иванов">
+            <button onclick="register()">🚀 Зарегистрировать</button>
+            
+            <h2>🔐 Вход</h2>
+            <input id="login-email" placeholder="Email" value="test@example.com">
+            <input id="login-password" type="password" placeholder="Пароль" value="123456">
+            <button onclick="login()">🔓 Войти</button>
+        </div>
+        
+        <!-- BITRIX SECTION -->
+        <div id="section-bitrix" class="section">
+            <h2>📞 Подключение Битрикс24</h2>
+            <p style="color: #6b7280; font-size: 14px;">Сначала войдите в систему!</p>
+            <input id="bitrix-domain" placeholder="Домен (например: mycompany.bitrix24.ru)" value="">
+            <input id="bitrix-client-id" placeholder="Client ID" value="">
+            <input id="bitrix-client-secret" placeholder="Client Secret" value="">
+            <button onclick="connectBitrix()" id="btn-connect-bitrix">🔗 Подключить Битрикс24</button>
+            
+            <h2>🔄 Синхронизация</h2>
+            <button onclick="syncUsers()">👥 Синхронизировать менеджеров</button>
+            <button onclick="syncCalls()">📞 Синхронизировать звонки (30 дней)</button>
+            <button onclick="checkBitrixStatus()">📊 Проверить статус</button>
+        </div>
+        
+        <!-- DATA SECTION -->
+        <div id="section-data" class="section">
+            <h2>📊 Данные компании</h2>
+            <button onclick="getManagers()">👥 Показать менеджеров</button>
+            <button onclick="getCalls()">📞 Показать звонки</button>
+        </div>
         
         <h2>📊 Результат:</h2>
-        <div class="result" id="result">Нажмите на кнопку выше для теста...</div>
+        <div class="result" id="result">Выберите действие...</div>
     </div>
 
     <script>
         const API_URL = 'https://callmind-mass-production.up.railway.app';
+        let token = localStorage.getItem('token');
+        
+        function showTab(tab) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('section-' + tab).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        function showResult(text, success = true) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = success ? 'result success' : 'result error';
+            resultDiv.textContent = text;
+        }
         
         async function register() {
-            const resultDiv = document.getElementById('result');
-            resultDiv.textContent = '⏳ Регистрация...';
-            resultDiv.className = 'result';
-            
             const data = {
                 companyName: document.getElementById('reg-company').value,
                 email: document.getElementById('reg-email').value,
@@ -108,25 +171,19 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    resultDiv.className = 'result success';
-                    resultDiv.textContent = '✅ РЕГИСТРАЦИЯ УСПЕШНА!\n\n' + JSON.stringify(result, null, 2);
-                    localStorage.setItem('token', result.token);
-                    alert('✅ Компания зарегистрирована! Токен сохранён.');
+                    token = result.token;
+                    localStorage.setItem('token', token);
+                    showResult('✅ РЕГИСТРАЦИЯ УСПЕШНА!\n\n' + JSON.stringify(result, null, 2));
+                    alert('✅ Компания зарегистрирована!');
                 } else {
-                    resultDiv.className = 'result error';
-                    resultDiv.textContent = '❌ ОШИБКА:\n\n' + JSON.stringify(result, null, 2);
+                    showResult('❌ ОШИБКА:\n\n' + JSON.stringify(result, null, 2), false);
                 }
             } catch (error) {
-                resultDiv.className = 'result error';
-                resultDiv.textContent = '❌ ОШИБКА СЕТИ:\n\n' + error.message;
+                showResult('❌ ОШИБКА:\n\n' + error.message, false);
             }
         }
         
         async function login() {
-            const resultDiv = document.getElementById('result');
-            resultDiv.textContent = '⏳ Вход...';
-            resultDiv.className = 'result';
-            
             const data = {
                 email: document.getElementById('login-email').value,
                 password: document.getElementById('login-password').value
@@ -142,20 +199,133 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    resultDiv.className = 'result success';
-                    resultDiv.textContent = '✅ ВХОД УСПЕШЕН!\n\n' + JSON.stringify(result, null, 2);
-                    localStorage.setItem('token', result.token);
-                    alert('✅ Вы вошли в систему! Токен сохранён.');
+                    token = result.token;
+                    localStorage.setItem('token', token);
+                    showResult('✅ ВХОД УСПЕШЕН!\n\n' + JSON.stringify(result, null, 2));
+                    alert('✅ Вы вошли в систему!');
                 } else {
-                    resultDiv.className = 'result error';
-                    resultDiv.textContent = '❌ ОШИБКА:\n\n' + JSON.stringify(result, null, 2);
+                    showResult('❌ ОШИБКА:\n\n' + JSON.stringify(result, null, 2), false);
                 }
             } catch (error) {
-                resultDiv.className = 'result error';
-                resultDiv.textContent = '❌ ОШИБКА СЕТИ:\n\n' + error.message;
+                showResult('❌ ОШИБКА:\n\n' + error.message, false);
+            }
+        }
+        
+        async function connectBitrix() {
+            if (!token) {
+                alert('❌ Сначала войдите в систему!');
+                return;
+            }
+            
+            const data = {
+                bitrixDomain: document.getElementById('bitrix-domain').value,
+                clientId: document.getElementById('bitrix-client-id').value,
+                clientSecret: document.getElementById('bitrix-client-secret').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/api/bitrix/connect`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showResult('✅ ССЫЛКА СОЗДАНА!\n\n' + JSON.stringify(result, null, 2));
+                    if (confirm('Открыть страницу авторизации Битрикс24?')) {
+                        window.open(result.authUrl, '_blank');
+                    }
+                } else {
+                    showResult('❌ ОШИБКА:\n\n' + JSON.stringify(result, null, 2), false);
+                }
+            } catch (error) {
+                showResult('❌ ОШИБКА:\n\n' + error.message, false);
+            }
+        }
+        
+        async function syncUsers() {
+            if (!token) { alert('❌ Сначала войдите!'); return; }
+            showResult('⏳ Синхронизация менеджеров...');
+            
+            try {
+                const response = await fetch(`${API_URL}/api/bitrix/sync-users`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const result = await response.json();
+                showResult('✅ ' + JSON.stringify(result, null, 2));
+            } catch (error) {
+                showResult('❌ ОШИБКА:\n\n' + error.message, false);
+            }
+        }
+        
+        async function syncCalls() {
+            if (!token) { alert('❌ Сначала войдите!'); return; }
+            showResult('⏳ Синхронизация звонков...');
+            
+            try {
+                const response = await fetch(`${API_URL}/api/bitrix/sync-calls`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const result = await response.json();
+                showResult('✅ ' + JSON.stringify(result, null, 2));
+            } catch (error) {
+                showResult('❌ ОШИБКА:\n\n' + error.message, false);
+            }
+        }
+        
+        async function checkBitrixStatus() {
+            if (!token) { alert('❌ Сначала войдите!'); return; }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/bitrix/status`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const result = await response.json();
+                showResult('📊 СТАТУС БИТРИКС24:\n\n' + JSON.stringify(result, null, 2));
+            } catch (error) {
+                showResult('❌ ОШИБКА:\n\n' + error.message, false);
+            }
+        }
+        
+        async function getManagers() {
+            if (!token) { alert('❌ Сначала войдите!'); return; }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/managers`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const result = await response.json();
+                showResult('👥 МЕНЕДЖЕРЫ:\n\n' + JSON.stringify(result, null, 2));
+            } catch (error) {
+                showResult('❌ ОШИБКА:\n\n' + error.message, false);
+            }
+        }
+        
+        async function getCalls() {
+            if (!token) { alert('❌ Сначала войдите!'); return; }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/calls`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const result = await response.json();
+                showResult('📞 ЗВОНКИ:\n\n' + JSON.stringify(result, null, 2));
+            } catch (error) {
+                showResult('❌ ОШИБКА:\n\n' + error.message, false);
             }
         }
     </script>
 </body>
 </html>
-```
